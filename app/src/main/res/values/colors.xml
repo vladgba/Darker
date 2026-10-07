@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ink">#FF0A0A0B</color>
+    <color name="surface">#FF1A1A1E</color>
+    <color name="line">#FF3C3C44</color>
+    <color name="ring">#FF5A5A64</color>
+    <color name="text">#FFF4F4F6</color>
+    <color name="muted">#FFB4B4BC</color>
+    <color name="accent">#FFF2EDE4</color>
+    <color name="widget_bg">#F5141416</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>

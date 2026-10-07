@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">Darker</string>
+    <string name="dim">Dim</string>
+    <string name="brightness">Brightness</string>
+    <string name="toggle_dim">Toggle dim</string>
+    <string name="percent">%1$d%%</string>
+    <string name="auto">Auto</string>
+    <string name="turn_on">Turn on</string>
+    <string name="turn_off">Turn off</string>
+    <string name="allow_overlay">Allow display over apps</string>
+    <string name="allow_overlay_hint">Required to dim the screen</string>
+    <string name="enable_a11y">Enable accessibility service</string>
+    <string name="enable_a11y_hint">Optional · also dims status bar and notifications, up to 95%</string>
+    <string name="allow_settings">Allow modify system settings</string>
+    <string name="allow_settings_hint">Needed for the brightness slider and widget</string>
+    <string name="a11y_description">Draws the dimming layer above the status bar and notification shade. Darker does not read or collect any screen content.</string>
+    <string name="state_on">On</string>
+    <string name="state_off">Off</string>
+    <string name="notif_channel">Dimmer</string>
+    <string name="notif_title">Darker is on</string>
+    <string name="notif_text">Tap to adjust</string>
+    <string name="widget_description">Dim button, dim level and brightness</string>
+    <string name="widget_dim_desc">Dim level, − and +</string>
+    <string name="widget_bright_desc">Screen brightness, − and +</string>
+    <string name="widget_toggle_desc">Turns dimming on and off</string>
+    <string name="widget_dim_label">Dim level</string>
+    <string name="widget_bright_label">Brightness</string>
+    <string name="widget_toggle_label">Dim button</string>
+    <string name="widget_combined_label">Darker (all)</string>
+    <string name="dim_less">Less dim</string>
+    <string name="dim_more">More dim</string>
+    <string name="bright_less">Lower brightness</string>
+    <string name="bright_more">Raise brightness</string>
+</resources>

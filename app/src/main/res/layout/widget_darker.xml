@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@android:id/background"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@drawable/widget_bg"
+              android:gravity="center_vertical"
+              android:orientation="horizontal"
+              android:paddingStart="14dp"
+              android:paddingEnd="12dp"
+              android:paddingTop="8dp"
+              android:paddingBottom="8dp">
+
+    <ImageView
+            android:id="@+id/w_power"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:padding="18dp"
+            android:background="@drawable/widget_power_off"
+            android:src="@drawable/ic_power"
+            android:contentDescription="@string/toggle_dim"/>
+
+    <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:orientation="vertical">
+
+        <include
+                layout="@layout/widget_row_dim"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+        <include
+                layout="@layout/widget_row_brightness"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+    </LinearLayout>
+</LinearLayout>

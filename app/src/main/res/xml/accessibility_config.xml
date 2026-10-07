@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Events are limited to this app's own package: the service never sees other apps' content. -->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+                       android:description="@string/a11y_description"
+                       android:summary="@string/a11y_description"
+                       android:packageNames="x.vladgba.darker"
+                       android:accessibilityEventTypes="typeWindowStateChanged"
+                       android:accessibilityFeedbackType="feedbackGeneric"
+                       android:accessibilityFlags="flagDefault"
+                       android:canRetrieveWindowContent="false"
+                       android:notificationTimeout="1000"/>

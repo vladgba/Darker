@@ -1,0 +1,21 @@
+# Gradle / build output
+.gradle/
+build/
+.kotlin/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Machine-specific (SDK path)
+local.properties
+
+# Android Studio
+*.iml
+.idea/
+.DS_Store
+
+# Built artifacts
+*.apk
+*.aab
+*.keystore
+*.jks
