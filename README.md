@@ -14,6 +14,7 @@ A minimalist Android screen dimmer. Darker draws a black, semi-transparent layer
   - **Brightness** (4×1): − / bar / + for the system screen brightness
   - **Dim button** (1×1): on/off toggle
   - **Darker (all)** (4×2): all of the above in one widget
+- **Quick Settings tile.** Toggle dimming from the notification shade.
 - **Optional accessibility mode.** It also dims the status bar and notification shade, and allows dimming up to 95%.
 - **No ads, no network, no data collection.**
 
