@@ -61,6 +61,7 @@ object Widgets {
     private const val FLAGS = PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
 
     fun updateAll(ctx: Context) {
+        DimTileService.refresh(ctx)
         val mgr = AppWidgetManager.getInstance(ctx)
         fun push(cls: Class<*>, layout: Int, bind: (Context, RemoteViews) -> Unit) {
             val ids = mgr.getAppWidgetIds(ComponentName(ctx, cls))
