@@ -2,7 +2,7 @@ package x.vladgba.darker
 
 import android.content.Context
 import android.content.Intent
-import androidx.core.net.toUri
+import android.net.Uri
 import android.provider.Settings
 import kotlin.math.roundToInt
 
@@ -39,6 +39,6 @@ object Brightness {
     }
 
     fun permissionIntent(ctx: Context): Intent =
-        Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, "package:${ctx.packageName}".toUri())
+        Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:${ctx.packageName}"))
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 }

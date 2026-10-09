@@ -1,5 +1,6 @@
 package x.vladgba.darker
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -8,14 +9,13 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ServiceInfo
 import android.database.ContentObserver
+import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.provider.Settings
 import android.view.WindowManager
-import androidx.core.app.NotificationCompat
-import androidx.core.app.ServiceCompat
 
 /**
  * Foreground service that hosts the dim layer as a regular app overlay.
@@ -100,7 +100,7 @@ class OverlayService : Service(), SharedPreferences.OnSharedPreferenceChangeList
 
     private fun release() {
         window.hide()
-        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+        stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
         Widgets.updateAll(this)
     }
@@ -123,22 +123,26 @@ class OverlayService : Service(), SharedPreferences.OnSharedPreferenceChangeList
         val stop = PendingIntent.getService(
             this, 1, Intent(this, OverlayService::class.java).setAction(ACTION_STOP), flags
         )
-        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+        val stopAction = Notification.Action.Builder(
+            Icon.createWithResource(this, R.drawable.ic_dim), getString(R.string.turn_off), stop
+        ).build()
+        // The channel is IMPORTANCE_LOW, so the notification is already silent.
+        val notification = Notification.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_dim)
             .setContentTitle(getString(R.string.notif_title))
             .setContentText(getString(R.string.notif_text))
             .setContentIntent(open)
-            .addAction(0, getString(R.string.turn_off), stop)
+            .addAction(stopAction)
             .setOngoing(true)
-            .setSilent(true)
+            .setOnlyAlertOnce(true)
             .setShowWhen(false)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
-            .setCategory(NotificationCompat.CATEGORY_SERVICE)
+            .setCategory(Notification.CATEGORY_SERVICE)
             .build()
-        ServiceCompat.startForeground(
-            this, NOTIFICATION_ID, notification,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE else 0
-        )
+        when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> startForeground(
+                NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+            )
+            else -> startForeground(NOTIFICATION_ID, notification)
+        }
     }
 }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -48,7 +47,7 @@
                     android:scaleType="centerInside"
                     android:padding="58dp"
                     android:stateListAnimator="@null"
-                    app:tint="@color/power_icon"
+                    android:tint="@color/power_icon"
                     android:contentDescription="@string/turn_on"/>
 
             <TextView
@@ -95,23 +94,11 @@
                         tools:text="50%"/>
             </LinearLayout>
 
-            <com.google.android.material.slider.Slider
+            <SeekBar
                     android:id="@+id/dim_slider"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:valueFrom="0"
-                    android:valueTo="80"
-                    android:stepSize="1"
-                    app:labelBehavior="gone"
-                    app:trackHeight="6dp"
-                    app:thumbRadius="12dp"
-                    app:thumbElevation="0dp"
-                    app:haloRadius="24dp"
-                    app:trackColorActive="@color/accent"
-                    app:trackColorInactive="@color/line"
-                    app:thumbColor="@color/text"
-                    app:haloColor="#33F2EDE4"
-                    app:tickColor="@android:color/transparent"/>
+                    style="@style/DarkerSlider"
+                    android:min="0"
+                    android:max="80"/>
             <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -144,23 +131,11 @@
                         tools:text="50%"/>
             </LinearLayout>
 
-            <com.google.android.material.slider.Slider
+            <SeekBar
                     android:id="@+id/bright_slider"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:valueFrom="1"
-                    android:valueTo="100"
-                    android:stepSize="1"
-                    app:labelBehavior="gone"
-                    app:trackHeight="6dp"
-                    app:thumbRadius="12dp"
-                    app:thumbElevation="0dp"
-                    app:haloRadius="24dp"
-                    app:trackColorActive="@color/accent"
-                    app:trackColorInactive="@color/line"
-                    app:thumbColor="@color/text"
-                    app:haloColor="#33F2EDE4"
-                    app:tickColor="@android:color/transparent"/>
+                    style="@style/DarkerSlider"
+                    android:min="1"
+                    android:max="100"/>
         </LinearLayout>
     </FrameLayout>
 
@@ -190,25 +165,18 @@
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
 
-            <com.google.android.material.button.MaterialButton
+            <FrameLayout
                     android:id="@+id/btn_overlay"
-                    style="@style/Widget.Material3.Button"
-                    app:backgroundTint="@color/accent"
-                    app:rippleColor="#330A0A0B"
-                    android:textColor="@color/ink"
-                    app:iconTint="@color/ink"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:text="@string/allow_overlay"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    android:textAllCaps="false"
-                    app:cornerRadius="26dp"
-                    app:icon="@drawable/ic_layers"
-                    app:iconGravity="textStart"
-                    app:iconPadding="10dp"/>
+                    style="@style/DarkerButton"
+                    android:background="@drawable/button_filled">
+
+                <TextView
+                        style="@style/DarkerButtonLabel"
+                        android:text="@string/allow_overlay"
+                        android:textColor="@color/ink"
+                        android:drawableStart="@drawable/ic_layers"
+                        android:drawableTint="@color/ink"/>
+            </FrameLayout>
 
             <TextView
                     android:layout_width="wrap_content"
@@ -227,26 +195,18 @@
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
 
-            <com.google.android.material.button.MaterialButton
+            <FrameLayout
                     android:id="@+id/btn_settings"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    app:strokeColor="@color/text"
-                    app:strokeWidth="1.5dp"
-                    app:rippleColor="#33F4F4F6"
-                    android:textColor="@color/text"
-                    app:iconTint="@color/text"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:text="@string/allow_settings"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    android:textAllCaps="false"
-                    app:cornerRadius="26dp"
-                    app:icon="@drawable/ic_sun"
-                    app:iconGravity="textStart"
-                    app:iconPadding="10dp"/>
+                    style="@style/DarkerButton"
+                    android:background="@drawable/button_outlined">
+
+                <TextView
+                        style="@style/DarkerButtonLabel"
+                        android:text="@string/allow_settings"
+                        android:textColor="@color/text"
+                        android:drawableStart="@drawable/ic_sun"
+                        android:drawableTint="@color/text"/>
+            </FrameLayout>
 
             <TextView
                     android:layout_width="wrap_content"
@@ -265,26 +225,18 @@
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
 
-            <com.google.android.material.button.MaterialButton
+            <FrameLayout
                     android:id="@+id/btn_a11y"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    app:strokeColor="@color/text"
-                    app:strokeWidth="1.5dp"
-                    app:rippleColor="#33F4F4F6"
-                    android:textColor="@color/text"
-                    app:iconTint="@color/text"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:text="@string/enable_a11y"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    android:textAllCaps="false"
-                    app:cornerRadius="26dp"
-                    app:icon="@drawable/ic_accessibility"
-                    app:iconGravity="textStart"
-                    app:iconPadding="10dp"/>
+                    style="@style/DarkerButton"
+                    android:background="@drawable/button_outlined">
+
+                <TextView
+                        style="@style/DarkerButtonLabel"
+                        android:text="@string/enable_a11y"
+                        android:textColor="@color/text"
+                        android:drawableStart="@drawable/ic_accessibility"
+                        android:drawableTint="@color/text"/>
+            </FrameLayout>
 
             <TextView
                     android:layout_width="wrap_content"

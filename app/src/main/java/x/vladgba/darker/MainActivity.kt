@@ -1,10 +1,12 @@
 package x.vladgba.darker
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.database.ContentObserver
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -13,20 +15,20 @@ import android.provider.Settings
 import android.view.HapticFeedbackConstants
 import android.view.View
 import android.widget.ImageButton
+import android.widget.SeekBar
 import android.widget.TextView
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
-import com.google.android.material.slider.Slider
 
-class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
+class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListener {
+
+    private companion object {
+        const val REQUEST_NOTIFICATIONS = 1
+    }
 
     private lateinit var power: ImageButton
     private lateinit var state: TextView
-    private lateinit var dimSlider: Slider
+    private lateinit var dimSlider: SeekBar
     private lateinit var dimValue: TextView
-    private lateinit var brightSlider: Slider
+    private lateinit var brightSlider: SeekBar
     private lateinit var brightValue: TextView
     private lateinit var setupGroup: View
     private lateinit var overlayRow: View
@@ -36,9 +38,6 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     /** Set when the user tapped power but we had to send them to grant the overlay permission. */
     private var startWhenPermitted = false
     private var draggingBrightness = false
-
-    private val notificationPermission =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { startOverlay() }
 
     /** Follows brightness changes made elsewhere (system slider, widget, auto-brightness). */
     private val brightnessObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
@@ -64,22 +63,26 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
         // Dim
         updateDimRange()
-        dimSlider.value = Prefs.opacity(this).toFloat()
+        dimSlider.progress = Prefs.opacity(this)
         dimValue.text = getString(R.string.percent, Prefs.opacity(this))
-        dimSlider.addOnChangeListener { _, v, fromUser ->
-            dimValue.text = getString(R.string.percent, v.toInt())
-            if (fromUser) Prefs.setOpacity(this, v.toInt())
-        }
+        dimSlider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(bar: SeekBar, v: Int, fromUser: Boolean) {
+                dimValue.text = getString(R.string.percent, v)
+                if (fromUser) Prefs.setOpacity(this@MainActivity, v)
+            }
+            override fun onStartTrackingTouch(bar: SeekBar) {}
+            override fun onStopTrackingTouch(bar: SeekBar) {}
+        })
 
         // Brightness
-        brightSlider.addOnChangeListener { _, v, fromUser ->
-            if (!fromUser) return@addOnChangeListener
-            Brightness.set(this, v.toInt())
-            brightValue.text = getString(R.string.percent, v.toInt())
-        }
-        brightSlider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
-            override fun onStartTrackingTouch(slider: Slider) { draggingBrightness = true }
-            override fun onStopTrackingTouch(slider: Slider) {
+        brightSlider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(bar: SeekBar, v: Int, fromUser: Boolean) {
+                if (!fromUser) return
+                Brightness.set(this@MainActivity, v)
+                brightValue.text = getString(R.string.percent, v)
+            }
+            override fun onStartTrackingTouch(bar: SeekBar) { draggingBrightness = true }
+            override fun onStopTrackingTouch(bar: SeekBar) {
                 draggingBrightness = false
                 Widgets.updateAll(this@MainActivity)
             }
@@ -129,8 +132,8 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
     override fun onSharedPreferenceChanged(sp: SharedPreferences?, key: String?) {
         if (key == Prefs.KEY_OPACITY) {
-            val v = Prefs.opacity(this).toFloat()
-            if (dimSlider.value != v) dimSlider.value = v
+            val v = Prefs.opacity(this)
+            if (dimSlider.progress != v) dimSlider.progress = v
         }
         render()
     }
@@ -154,15 +157,23 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
     private fun askNotificationsThenStart() {
         val needsAsk = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) !=
+            checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) !=
             PackageManager.PERMISSION_GRANTED &&
             !Prefs.askedNotifications(this)
         if (needsAsk) {
             Prefs.markAskedNotifications(this)
-            notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQUEST_NOTIFICATIONS)
         } else {
             startOverlay()
         }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        // Start either way: without the permission the service still runs, just without a visible notification.
+        if (requestCode == REQUEST_NOTIFICATIONS) startOverlay()
     }
 
     private fun startOverlay() {
@@ -170,14 +181,14 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             Prefs.setEnabled(this, true)
             return
         }
-        ContextCompat.startForegroundService(
-            this, Intent(this, OverlayService::class.java).setAction(OverlayService.ACTION_START)
+        startForegroundService(
+            Intent(this, OverlayService::class.java).setAction(OverlayService.ACTION_START)
         )
     }
 
     private fun requestOverlayPermission() {
         startActivity(
-            Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, "package:$packageName".toUri())
+            Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
         )
     }
 
@@ -185,9 +196,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
     /** The dim cap depends on whether the accessibility service is running. */
     private fun updateDimRange() {
-        val max = Prefs.maxOpacity.toFloat()
-        if (dimSlider.value > max) dimSlider.value = max
-        dimSlider.valueTo = max
+        dimSlider.max = Prefs.maxOpacity
     }
 
     private fun render() {
@@ -196,7 +205,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         power.isActivated = on
         power.contentDescription = getString(if (on) R.string.turn_off else R.string.turn_on)
         state.setText(if (on) R.string.state_on else R.string.state_off)
-        state.setTextColor(ContextCompat.getColor(this, if (on) R.color.accent else R.color.muted))
+        state.setTextColor(getColor(if (on) R.color.accent else R.color.muted))
         dimValue.animate().alpha(if (on) 1f else 0.7f).setDuration(200).start()
 
         // Setup: one button per missing permission; each disappears once granted.
@@ -213,7 +222,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     private fun renderBrightness() {
         val writable = Brightness.canWrite(this)
         val pct = Brightness.percent(this).coerceIn(1, 100)
-        brightSlider.value = pct.toFloat()
+        brightSlider.progress = pct
         brightSlider.isEnabled = writable
         brightSlider.alpha = if (writable) 1f else 0.4f
         brightValue.text =
