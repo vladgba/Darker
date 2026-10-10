@@ -3,7 +3,7 @@
 A minimalist Android screen dimmer. Darker draws a black, semi-transparent layer over the screen so you can go below the minimum system brightness. Touches pass straight through the layer, so you keep using your phone normally.
 
 <p align="center">
-  <img src="docs/screenshot.jpg" alt="Darker main screen" width="300">
+  <img src="docs/feature-graphic.png">
 </p>
 
 ## Features
