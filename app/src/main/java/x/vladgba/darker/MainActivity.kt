@@ -2,6 +2,7 @@ package x.vladgba.darker
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -99,9 +100,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         findViewById<View>(R.id.btn_settings).setOnClickListener {
             startActivity(Brightness.permissionIntent(this))
         }
-        findViewById<View>(R.id.btn_a11y).setOnClickListener {
-            startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
-        }
+        findViewById<View>(R.id.btn_a11y).setOnClickListener { showAccessibilityDisclosure() }
     }
 
     override fun onResume() {
@@ -184,6 +183,21 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         startForegroundService(
             Intent(this, OverlayService::class.java).setAction(OverlayService.ACTION_START)
         )
+    }
+
+    /**
+     * Prominent disclosure required by Google Play before the user is sent to enable the
+     * accessibility service: what it is used for, that it collects nothing, and explicit consent.
+     */
+    private fun showAccessibilityDisclosure() {
+        AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+            .setTitle(R.string.a11y_disclosure_title)
+            .setMessage(R.string.a11y_disclosure_text)
+            .setPositiveButton(R.string.a11y_disclosure_agree) { _, _ ->
+                startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+            }
+            .setNegativeButton(R.string.a11y_disclosure_decline, null)
+            .show()
     }
 
     private fun requestOverlayPermission() {

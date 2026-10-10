@@ -14,6 +14,10 @@
     <string name="allow_settings">Allow modify system settings</string>
     <string name="allow_settings_hint">Needed for the brightness slider and widget</string>
     <string name="a11y_description">Draws the dimming layer above the status bar and notification shade. Darker does not read or collect any screen content.</string>
+    <string name="a11y_disclosure_title">Use the accessibility service?</string>
+    <string name="a11y_disclosure_text">Darker can use Android\'s Accessibility Service API to draw its dimming layer as an accessibility overlay. This lets it also dim the status bar and notification shade and go darker, up to 95%.\n\nThe service is used only to show that dark layer. It does not read, collect, store or share any screen content, text you type or other data, and it does not perform actions for you. Darker has no internet access.\n\nOn the next screen, find Darker and turn it on. You can turn it off at any time in Accessibility settings.</string>
+    <string name="a11y_disclosure_agree">Agree</string>
+    <string name="a11y_disclosure_decline">No thanks</string>
     <string name="state_on">On</string>
     <string name="state_off">Off</string>
     <string name="notif_channel">Dimmer</string>
