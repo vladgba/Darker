@@ -6,6 +6,17 @@ A minimalist Android screen dimmer. Darker draws a black, semi-transparent layer
   <img src="docs/feature-graphic.png">
 </p>
 
+<p align="center">
+  <a href="https://play.google.com/apps/internaltest/4701366450213000989">
+    <img alt="Get it on Google Play" height="80" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png">
+  </a>
+</p>
+
+<p align="center">
+  Darker is in internal testing. The link works only for Google accounts on the tester list.
+  To join, email <a href="mailto:vladgba@gmail.com?subject=Darker%20tester">vladgba@gmail.com</a> with the address you use on Google Play.
+</p>
+
 ## Features
 
 - **One-tap on/off.** A big power button, with a dim slider and a system brightness slider.
