@@ -1,0 +1,83 @@
+# Builds the debug APK on every push / pull request and attaches it to the run as an artifact
+# (Actions tab → the run → "Artifacts"). Unit tests run first; a failing test fails the build.
+#
+# Optional, recommended: secret DEBUG_KEYSTORE_B64 = base64 of a debug keystore
+# (e.g. your ~/.android/debug.keystore, password "android", alias "androiddebugkey").
+# Without it every run signs with a fresh random debug key, so a CI build can't be installed
+# over a previous one (or over a local build) without uninstalling first.
+name: Debug APK
+
+on:
+  push:
+    branches: ['**']
+    paths-ignore: ['**.md', '.agentsroom/**', '.claude/**']
+  pull_request:
+    paths-ignore: ['**.md', '.agentsroom/**', '.claude/**']
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # The Android SDK (with licenses accepted) is preinstalled on GitHub's Ubuntu runners
+      # ($ANDROID_HOME); Gradle downloads any missing platform / build-tools itself.
+      - name: Gradle (with cache)
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Debug signing key
+        env:
+          DEBUG_KEYSTORE_B64: ${{ secrets.DEBUG_KEYSTORE_B64 }}
+        run: |
+          if [ -n "$DEBUG_KEYSTORE_B64" ]; then
+            mkdir -p ~/.android
+            echo "$DEBUG_KEYSTORE_B64" | base64 --decode > ~/.android/debug.keystore
+            echo "Using the debug keystore from secrets"
+          else
+            echo "::notice::No DEBUG_KEYSTORE_B64 secret: signing with a one-off debug key"
+          fi
+
+      - name: Build
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          chmod +x gradlew
+          ./gradlew --no-daemon testDebugUnitTest assembleDebug
+
+      - name: Artifact name
+        id: meta
+        run: |
+          v=$(awk -F= '/^(major|minor|patch)=/{gsub(/[ \r]/,"",$2); a[$1]=$2} END{print a["major"]"."a["minor"]"."a["patch"]}' version.properties)
+          echo "name=Darker-$v-debug-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v5
+        with:
+          name: ${{ steps.meta.outputs.name }}
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: test-reports
+          path: app/build/reports/tests/
+          if-no-files-found: ignore
